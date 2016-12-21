@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Cocinero;
+import model.Plato;
 
 /**
  *
@@ -43,6 +44,25 @@ public class RestaurantJDBC {
         return cocineros;
     }
     
+        public List<Plato> selectAllPlatos() throws SQLException {
+        List<Plato> platos = new ArrayList<>();
+        String query = "select * from plato";
+        Statement st = conexion.createStatement();
+        ResultSet rs = st.executeQuery(query);
+        while (rs.next()) {
+            Plato p = new Plato();
+            p.setNombre(rs.getString("nombre"));
+            p.setTipo(rs.getString("tipo"));
+            p.setPrecio(rs.getDouble("precio"));
+          //  p.setCocinero(rs.get("Cocinero"));
+          
+            platos.add(p);
+        }
+        rs.close();
+        st.close();
+        return platos;
+    }
+    
     // Función que inserta un cocinero en la bbdd
     public void insertCocinero(Cocinero c) throws SQLException {
         String insert = "insert into cocinero values (?, ?, ?, ?, ?, ?);";
@@ -54,6 +74,19 @@ public class RestaurantJDBC {
         ps.setInt(4, c.getEdad());
         ps.setInt(5, c.getExperiencia());
         ps.setString(6, c.getEspecialidad());
+        // ejecutamos la consultas
+        ps.executeUpdate();
+        ps.close();
+    }
+    
+        public void insertPlato(Plato p) throws SQLException {
+        String insert = "insert into plato values (?, ?, ?, ?);";
+        PreparedStatement ps = conexion.prepareStatement(insert);
+        // Vamos dando valores a los interrogantes
+        ps.setString(1, p.getNombre());
+        ps.setString(2, p.getTipo());
+        ps.setDouble(3, p.getPrecio());
+        ps.setString(4, p.getCocinero().getNombre());
         // ejecutamos la consultas
         ps.executeUpdate();
         ps.close();
